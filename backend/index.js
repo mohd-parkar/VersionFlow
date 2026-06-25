@@ -7,8 +7,12 @@ const { pushRepo } = require("./controllers/push");
 const { pullRepo } = require("./controllers/pull");
 const { revertRepo } = require("./controllers/revert");
 
+// Index.js -> 1. Handles reading all command for out git creation
+//             2. ALso will behave like actual express server (app) - default functionalities
+
 // creating init command
 yargs(hideBin(process.argv))
+  .command("start", "Start the server", {}, startServer)// this is additional command which we created to write app server or start it 
   .command("init", "Initialize the repository", {}, initRepo)
   .command(
     "add <file>",
@@ -53,3 +57,9 @@ yargs(hideBin(process.argv))
   )
   .demandCommand(1, "You need atleast one command")
   .help().argv;
+
+
+  // Our Express (app)server logic will be writen here - which was defaultly writen insider the index.js file
+  function startServer(){
+    console.log("our app server logic called");
+  }
