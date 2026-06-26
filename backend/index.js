@@ -5,6 +5,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const http = require("http");
 const { Server } = require("socket.io");
+const mainRouter = require("./routes/main.routes");
 
 dotenv.config();
 
@@ -92,6 +93,8 @@ function startServer() {
   app.get("/",(req,res)=>{
     console.log("Route is working ");
   })
+
+  app.use("/", mainRouter);
 
   let user = "test";
 
