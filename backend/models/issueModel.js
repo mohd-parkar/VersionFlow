@@ -29,4 +29,4 @@ const IssueRepo = new Schema({
 
 const  Issue = mongoose.model("Issue", IssueRepo);
 
-export default Issue;
+module.exports = Issue;

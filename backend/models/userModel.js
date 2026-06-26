@@ -38,4 +38,4 @@ const UserSchema = new Schema({
 
 const User = mongoose.mondel("User", UserSchema);
 
-export default User;
+module.exports = User;
