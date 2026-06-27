@@ -22,11 +22,11 @@ const IssueRepo = new Schema({
         ref : "Repository",
         required : true,
     },
-}),
+});
 
 
 // making the model
 
-const  Issue = mongoose.model("Issue", IssueRepo);
+const Issue = mongoose.model("Issue", IssueRepo);
 
 module.exports = Issue;
