@@ -3,12 +3,50 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const UserModel = require("../models/userModel");
 const dotenv = require("dotenv");
+var ObjectId = require("mongodb").ObjectId; // for searching the objectId in db
 
 dotenv.config();
 
-const getAllUsers = (req, res) => {
-  res.send("All users fetched");
+
+const getAllUsers = async (req, res) => {
+// fetching all the users then sending 
+  try {
+    const users = await UserModel.find({});
+    res.json(users)
+  } catch (error) {
+    console.error("Error occured during fetching all users", error.message);
+    res.status(500).json({message : "Server Error"});
+  }
 };
+
+const getUserProfile = async (req, res) => {
+  const currentID = req.params.id;
+  
+  // fetching certain user profile
+  try{
+    const user = await UserModel.findOne(
+      {_id : new ObjectId(currentID)}
+    );
+
+    if(!user){
+      return res.status(404).json({message : "User not found"});
+    };
+
+    res.json(user)
+  }catch(err){
+    console.error("Error occured during fetching",err.message);
+    res.status(500).json({message : "Server Error"});
+  };
+};
+
+const updateUserProfile = (req, res) => {
+  res.send("Profile updated");
+};
+
+const deleteUserProfile = (req, res) => {
+  res.send("Profile deleted");
+};
+
 
 async function signup(req, res) {
   const { username, password, email } = req.body;
@@ -76,18 +114,6 @@ const login = async (req, res) => {
     console.error("Error occured",error.message);
     res.status(500).json({message : "Server Error"});
   };
-};
-
-const getUserProfile = (req, res) => {
-  res.send("Profile fetched");
-};
-
-const updateUserProfile = (req, res) => {
-  res.send("Profile updated");
-};
-
-const deleteUserProfile = (req, res) => {
-  res.send("Profile deleted");
 };
 
 module.exports = {
