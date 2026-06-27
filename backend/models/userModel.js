@@ -1,6 +1,15 @@
 const mongoose = require("mongoose");
 const {Schema} = require("mongoose");
 const { required } = require("yargs");
+const dotenv = require("dotenv");
+
+dotenv.config();
+
+async function connectDB(){
+    await mongoose.connect(process.env.MONGO_URI);
+}
+
+connectDB();
 
 const UserSchema = new Schema({
     username : {
@@ -36,6 +45,6 @@ const UserSchema = new Schema({
 
 // Making the Model from Schema
 
-const User = mongoose.mondel("User", UserSchema);
+const User = mongoose.model("User", UserSchema);
 
 module.exports = User;

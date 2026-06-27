@@ -2,10 +2,14 @@
 
 const express = require("express");
 const userRouter = require("../routes/user.routes");
+const repoRouter = require("../routes/repo.routes");
+const issueRouter = require("../routes/issue.routes");
 
 const router = express.Router();
 
 router.use(userRouter);
+router.use(repoRouter);
+router.use(issueRouter);
 
 
 module.exports = router;
