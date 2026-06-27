@@ -7,46 +7,91 @@ var ObjectId = require("mongodb").ObjectId; // for searching the objectId in db
 
 dotenv.config();
 
-
 const getAllUsers = async (req, res) => {
-// fetching all the users then sending 
+  // fetching all the users then sending
   try {
     const users = await UserModel.find({});
-    res.json(users)
+    res.json(users);
   } catch (error) {
     console.error("Error occured during fetching all users", error.message);
-    res.status(500).json({message : "Server Error"});
+    res.status(500).json({ message: "Server Error" });
   }
 };
 
 const getUserProfile = async (req, res) => {
   const currentID = req.params.id;
-  
+
   // fetching certain user profile
-  try{
-    const user = await UserModel.findOne(
-      {_id : new ObjectId(currentID)}
+  try {
+    const user = await UserModel.findOne({ _id: new ObjectId(currentID) });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json(user);
+  } catch (err) {
+    console.error("Error occured during fetching", err.message);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+const updateUserProfile = async (req, res) => {
+  // update the user info given by him , first access his id from params
+  const currentID = req.params.id;
+  const { email, password } = req.body;
+
+  try {
+    const updatedInfo = { email };
+    if(password){
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    updatedInfo.password = hashedPassword;
+    }
+    const result = await UserModel.findByIdAndUpdate(
+      {
+        _id: currentID,
+      },
+      { $set: updatedInfo },
+      {
+        returnDocument: "after",
+      },
     );
 
-    if(!user){
-      return res.status(404).json({message : "User not found"});
+    if(!result){
+     return  res.status(404).json({message : "User not found "});
     };
 
-    res.json(user)
-  }catch(err){
-    console.error("Error occured during fetching",err.message);
-    res.status(500).json({message : "Server Error"});
+    res.send(result);
+
+  } catch (err) {
+    console.error("Error occured while updated", err.message);
+    res.status(500).json({message : "Server error"})
   };
+
+
 };
 
-const updateUserProfile = (req, res) => {
-  res.send("Profile updated");
-};
+const deleteUserProfile = async(req, res) => {
+  const currentID = req.params.id ;
 
-const deleteUserProfile = (req, res) => {
-  res.send("Profile deleted");
-};
+  try{
+    const result = await UserModel.findByIdAndDelete({_id : currentID});
 
+    if(!result){
+      return res.status(404).json({message : "User Not Found"});
+    };
+
+    res.json({
+    message: "User profile deleted",
+    user: result,
+});
+
+  }catch(error){
+    console.error("Error occured during the deleting user", error.message);
+    res.status(500).json({message : "Server Error"});
+  }
+};
 
 async function signup(req, res) {
   const { username, password, email } = req.body;
@@ -89,7 +134,6 @@ const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-
     // Checking if the email or user is invalid or not signed in
     const user = await UserModel.findOne({ email });
     if (!user) {
@@ -109,11 +153,10 @@ const login = async (req, res) => {
     });
 
     res.json({ token, userId: user._id });
+  } catch (error) {
+    console.error("Error occured", error.message);
+    res.status(500).json({ message: "Server Error" });
   }
-   catch (error) {
-    console.error("Error occured",error.message);
-    res.status(500).json({message : "Server Error"});
-  };
 };
 
 module.exports = {
