@@ -37,16 +37,55 @@ const createRepository = async (req, res) => {
 
 };
 
-const getAllRepositories = (req, res) => {
-  res.send("All Repositories fetched");
+const getAllRepositories = async (req, res) => {
+  try{
+    const repositories = await RepoModel.find({}).populate("owner").populate("issues");
+
+    if(!repositories){
+      return res.status(404).json({messgae : "Didn't found the repositories"});
+    }
+
+    res.json(repositories);
+  }catch(error){
+    console.error("Error during the fetching all the repos",error.message);
+    res.status(500).json({message : "Server Error"});
+  };
 };
 
-const fetchRepositoryById = (req, res) => {
-  res.send("Repository Detail fetched");
+const fetchRepositoryById = async (req, res) => {
+  const id = req.params.id;
+
+  try{
+    const repo = await RepoModel.find({_id : id}).populate("owner").populate("issues");
+
+    if(!repo){
+      return res.status(404).json({message : "Repo not found"});
+    };
+
+    res.json(repo);
+
+  }catch(err){
+    console.error("Error during the fetching repo by id");
+    res.status(500).json({message : "Server Error"});
+  }
+
 };
 
-const fetchRepositoryByName = (req, res) => {
-  res.send("Repository Detail fetched");
+const fetchRepositoryByName = async (req, res) => {
+  const name = req.params.name;
+  
+  try{
+    const repo = await RepoModel.find({name});
+
+    if(!repo){
+      return res.status(404).json({message : "Repo not found"});
+    };
+
+    res.json(repo);
+  }catch(err){
+    console.error("Error during the fetching the repo using name",err.message);
+    res.status(500).json({message : "Internal server error"});
+  };
 };
 
 const fetchRepositoryForCurrentUser = (req, res) => {
