@@ -88,20 +88,89 @@ const fetchRepositoryByName = async (req, res) => {
   };
 };
 
-const fetchRepositoryForCurrentUser = (req, res) => {
-  res.send("Repository for logged in user");
+const fetchRepositoryForCurrentUser = async (req, res) => {
+  const UserId = req.user;
+
+  try{
+    const repositories = await RepoModel.find({owner : UserId});
+
+    if(!repositories){
+      return res.status(404).json({message : "user repositories not found"});
+    };
+
+    res.json(repositories);
+  }catch(error){
+    console.error("Error during fetching user repo", error.message);
+    res.status(500).json({message : "Server Error"});
+  };
+
+
 };
 
-const updateRepositoryById = (req, res) => {
-  res.send("Repository updated");
+const updateRepositoryById = async (req, res) => {
+  const id = req.params.id;
+  const {content, description} = req.body;
+
+  try{
+    let repository = await RepoModel.findById(id);
+
+    if(!repository){
+      return res.status(404).json({message : "Repository not found"});
+    };
+
+    repository.content.push(content);
+    repository.description = description;
+
+    const result = await repository.save();
+
+    res.json({message : "Repository updated succesfully , repository : result"});
+
+
+  }catch(error){
+    console.error("Error during updating the repo",error.message);
+    res.status(500).json({message : "Server Error"});
+  }
+
 };
 
-const toggleVisibilityById = (req, res) => {
-  res.send("Visibility toggled");
+const toggleVisibilityById = async(req, res) => {
+  const id = req.params.id;
+
+  try{
+    let repository = await RepoModel.findById(id);
+
+    if(!repository){
+      return res.status(404).json({message : "Repository not found"});
+    };
+
+    repository.visibility = !repository.visibility;
+
+    const result = await repository.save();
+
+    res.json({message : "Repository toggle  succesfully , repository : result"});
+
+
+  }catch(error){
+    console.error("Error during toggling the repo",error.message);
+    res.status(500).json({message : "Server Error"});
+  }
 };
 
-const deleteRepositoryById = (req, res) => {
-  res.send("Repository deleted");
+const deleteRepositoryById = async(req, res) => {
+  const id = req.params.id;
+
+  try{
+    const repository = await RepoModel.findByIdAndDelete(id);
+
+    if(!repository){
+      return res.status(404).json({message : "repo not found"});
+    };
+
+    res.json({message :"Repository deleted"})
+  }catch(error){ 
+    console.error("Error occured during deletion of repo",error.message);
+    res.status(500).json({message : "Server Error"});
+  }
 };
 
 
