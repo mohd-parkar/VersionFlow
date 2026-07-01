@@ -123,7 +123,7 @@ async function signup(req, res) {
       expiresIn: "1h",
     });
 
-    res.json(token);
+    res.json({token , userId : result._id});
   } catch (err) {
     console.error("Error occured", err.message);
   }
