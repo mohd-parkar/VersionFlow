@@ -54,7 +54,7 @@ const Dashboard = ()=> {
             setSearchResult(repositories);
         }else{
             const filteredRepo = repositories.filter((repo) =>
-            repo.name.toLowerCase().inclues(searchQuery.toLowerCase())
+            repo.name.toLowerCase().includes(searchQuery.toLowerCase())
         );
 
             setSearchResult(filteredRepo);
@@ -70,7 +70,7 @@ const Dashboard = ()=> {
                 <h3>Suggested Repositories</h3>
                 {suggesteRepositories.map((repo)=>{
                    return ( 
-                   <div>
+                   <div key={repo._id}>
                          <h4>{repo.name}</h4>
                          <p>{repo.description}</p>
                     </div>
@@ -79,9 +79,10 @@ const Dashboard = ()=> {
             </aside>
             <main>
                  <h2>Your Repositories</h2>
-                {repositories.map((repo)=>{
+                 <input type='text' placeholder='Search...' value={searchQuery} onChange={(e)=>setSearchQuery(e.target.value)}></input>
+                {searchResult.map((repo)=>{
                    return ( 
-                   <div>
+                   <div key={repo._id}>
                          <h4>{repo.name}</h4>
                          <p>{repo.description}</p>
                     </div>
